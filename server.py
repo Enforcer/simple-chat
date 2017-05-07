@@ -26,7 +26,7 @@ async def feed(request, ws):
             global_room.leave(ws)
             break
         else:
-            await global_room.send_message(message, ws)
+            await global_room.send_message(message)
 
 
 if __name__ == "__main__":

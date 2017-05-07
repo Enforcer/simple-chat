@@ -12,7 +12,7 @@ class Room:
         except ValueError:
             pass  # already removed
 
-    async def send_message(self, message, sender):
+    async def send_message(self, message):
         for receiver in self.clients:
             try:
                 await receiver.send(message)
