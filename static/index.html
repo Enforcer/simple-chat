@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Simple chat test</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <form>
+          <div class="form-group">
+            <label for="messages">Chat</label>
+            <div id="messages"></div>
+          </div>
+          <div class="form-group">
+            <label for="your-message">Type in here</label>
+            <input class="form-control" id="your-message" placeholder="Type in here">
+          </div>
+          <button type="submit" class="btn btn-default" disabled="disabled">Submit</button>
+        </form>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+function onClickFactory(websocket) {
+    return function (event) {
+        event.preventDefault();
+
+        const $mesageInput = $('#your-message');
+        const message = $mesageInput.val();
+        $mesageInput.val('');
+        if (!message) {
+            return
+        }
+
+        websocket.send(message);
+    }
+}
+
+
+function newMessage(message) {
+    const newMessage = $('<div class="alert alert-info" role="alert"></div>');
+    newMessage.text(message.data);
+    $('#messages').append(newMessage);
+}
+
+
+function init(websocket) {
+    return function () {
+        $('button[type="submit"]')
+            .on('click', onClickFactory(websocket))
+            .removeAttr('disabled');
+    }
+}
+
+
+function close() {
+    $('button[type="submit"]')
+        .off('click')
+        .attr('disabled', 'disabled');
+}
+
+
+$(function() {
+    websocket = new WebSocket('ws://127.0.0.1:8000/chat');
+    websocket.onopen = init(websocket);
+    websocket.onerror = websocket.onclose = close;
+    websocket.onmessage = newMessage;
+});
+    </script>
+  </body>
+</html>
